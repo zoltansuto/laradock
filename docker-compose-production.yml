@@ -337,7 +337,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=tr
-        - traefik.http.routers.battlestarap.rule=Host(`battlestarap.itceleb.com`)
+        - traefik.http.routers.battlestarap.rule=Host(`battlestar-ap.itceleb.com`)
         - traefik.http.routers.battlestarap.entrypoints=websecure
         - traefik.http.routers.battlestarap.tls=true
         - traefik.http.routers.battlestarap.tls.certresolver=le
@@ -412,7 +412,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=tr
-        - traefik.http.routers.battlestarap-mongoadmin.rule=Host(`mongo-admin.battlestarap.itceleb.com`)
+        - traefik.http.routers.battlestarap-mongoadmin.rule=Host(`mongo-admin.battlestar-ap.itceleb.com`)
         - traefik.http.services.battlestarap-mongoadmin.loadbalancer.server.port=5000
         - traefik.http.routers.battlestarap-mongoadmin.entrypoints=websecure
         - traefik.http.routers.battlestarap-mongoadmin.tls=true
