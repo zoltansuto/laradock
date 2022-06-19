@@ -141,8 +141,8 @@ services:
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/u1i2s/app/storage:/home/u1i2s/app2/storage
-        - /home/u1i2s/app/.env:/home/u1i2s/app2/.env
+        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
+        - /home/u1i2s/app2/.env:/home/u1i2s/app2/.env
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       ports:
@@ -247,8 +247,8 @@ services:
       volumes:
         - ./php-fpm/php${PHP_VERSION}.ini:/usr/local/etc/php/php.ini
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-        - /home/u1i2s/app/storage:/home/u1i2s/app2/storage
-        - /home/u1i2s/app/.env:/home/u1i2s/app2/.env
+        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
+        - /home/u1i2s/app2/.env:/home/u1i2s/app2/.env
       expose:
         - "9000"
       extra_hosts:
@@ -303,8 +303,8 @@ services:
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/u1i2s/app/storage:/home/u1i2s/app2/storage
-        - /home/u1i2s/app/.env:/home/u1i2s/app2/.env
+        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
+        - /home/u1i2s/app2/.env:/home/u1i2s/app2/.env
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       networks:
@@ -326,7 +326,7 @@ services:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
         - ${NGINX_SITES_PATH}:/etc/nginx/sites-available
-        - /home/u1i2s/app/storage
+        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
       depends_on:
         - php-fpm
       networks:
