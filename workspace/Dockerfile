@@ -186,7 +186,8 @@ RUN echo "" >> ~/.bashrc && \
 USER laradock
 
 RUN echo "" >> ~/.bashrc && \
-    echo 'export PATH="/var/www/vendor/bin:$PATH"' >> ~/.bashrc
+    echo 'export PATH="/var/www/vendor/bin:$PATH"' >> ~/.bashrc &&\
+    echo 'export PATH="./node_modules/.bin:$PATH"' >> ~/.bashrc
 
 ###########################################################################
 # Crontab
