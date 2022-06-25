@@ -141,8 +141,8 @@ services:
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
-        - /home/u1i2s/app2/.env:/home/u1i2s/app2/.env
+        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
+        - /home/u1i2s/app/.env:/home/u1i2s/app/.env
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       ports:
@@ -247,8 +247,8 @@ services:
       volumes:
         - ./php-fpm/php${PHP_VERSION}.ini:/usr/local/etc/php/php.ini
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
-        - /home/u1i2s/app2/.env:/home/u1i2s/app2/.env
+        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
+        - /home/u1i2s/app/.env:/home/u1i2s/app/.env
       expose:
         - "9000"
       extra_hosts:
@@ -303,8 +303,8 @@ services:
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
-        - /home/u1i2s/app2/.env:/home/u1i2s/app2/.env
+        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
+        - /home/u1i2s/app/.env:/home/u1i2s/app/.env
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       networks:
@@ -326,7 +326,7 @@ services:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
         - ${NGINX_SITES_PATH}:/etc/nginx/sites-available
-        - /home/u1i2s/app2/storage:/home/u1i2s/app2/storage
+        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
       depends_on:
         - php-fpm
       networks:
@@ -337,10 +337,10 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=tr
-        - traefik.http.routers.battlestarap.rule=Host(`battlestar-ap.itceleb.com`)
-        - traefik.http.routers.battlestarap.entrypoints=websecure
-        - traefik.http.routers.battlestarap.tls=true
-        - traefik.http.routers.battlestarap.tls.certresolver=le
+        - traefik.http.routers.battlestar.rule=Host(`battlestar-spa.itceleb.com`)
+        - traefik.http.routers.battlestar.entrypoints=websecure
+        - traefik.http.routers.battlestar.tls=true
+        - traefik.http.routers.battlestar.tls.certresolver=le
 
 ### MySQL ################################################
     mysql:
@@ -412,9 +412,9 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=tr
-        - traefik.http.routers.battlestarap-mongoadmin.rule=Host(`mongo-admin.battlestar-ap.itceleb.com`)
-        - traefik.http.services.battlestarap-mongoadmin.loadbalancer.server.port=5000
-        - traefik.http.routers.battlestarap-mongoadmin.entrypoints=websecure
-        - traefik.http.routers.battlestarap-mongoadmin.tls=true
-        - traefik.http.routers.battlestarap-mongoadmin.tls.certresolver=le
+        - traefik.http.routers.mongoadmin.rule=Host(`mongo-admin.battlestar-spa.itceleb.com`)
+        - traefik.http.services.mongoadmin.loadbalancer.server.port=5000
+        - traefik.http.routers.mongoadmin.entrypoints=websecure
+        - traefik.http.routers.mongoadmin.tls=true
+        - traefik.http.routers.mongoadmin.tls.certresolver=le
 
