@@ -341,6 +341,7 @@ services:
         - traefik.docker.network=tr
         - traefik.http.routers.battlestar.rule=Host(`battlestar-spa.itceleb.com`)
         - traefik.http.routers.battlestar.entrypoints=websecure
+        - traefik.http.routers.battlestar.middleware=chain-oauth
         - traefik.http.routers.battlestar.tls=true
         - traefik.http.routers.battlestar.tls.certresolver=le
 
@@ -418,6 +419,7 @@ services:
         - traefik.http.routers.mongoadmin.rule=Host(`mongo-admin.battlestar-spa.itceleb.com`)
         - traefik.http.services.mongoadmin.loadbalancer.server.port=5000
         - traefik.http.routers.mongoadmin.entrypoints=websecure
+        - traefik.http.routers.mongoadmin.middleware=chain-oauth
         - traefik.http.routers.mongoadmin.tls=true
         - traefik.http.routers.mongoadmin.tls.certresolver=le
 
