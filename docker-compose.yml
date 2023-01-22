@@ -181,10 +181,13 @@ services:
           - http_proxy
           - https_proxy
           - no_proxy
+          - INSTALL_CYPRESS=${WORKSPACE_INSTALL_CYPRESS}
+          - CYPRESS_VERSION=${WORKSPACE_CYPRESS_VERSION}
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - docker-in-docker:/certs/client
         - ./php-worker/supervisord.d:/etc/supervisord.d
+        - /tmp/.X11-unix:/tmp/.X11-unix
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       ports:
@@ -203,6 +206,10 @@ services:
         - DOCKER_TLS_CERTDIR=/certs
         - DOCKER_CERT_PATH=/certs/client
         - CHOKIDAR_USEPOLLING=true
+        - QT_X11_NO_MITSHM=1
+        - _X11_NO_MITSHM=1
+        - _MITSHM=0
+        - DISPLAY=${DISPLAY}
       networks:
         - frontend
         - backend

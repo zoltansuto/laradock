@@ -1855,6 +1855,31 @@ RUN if [ ${INSTALL_JDK} = true ]; then \
     && update-ca-certificates -f \
 ;fi
 
+###########################################################################
+# Cypress:
+###########################################################################
+
+USER root
+
+ARG INSTALL_CYPRESS=false
+ARG CYPRESS_VERSION=latest
+
+RUN set -xe; \
+if [ ${INSTALL_CYPRESS} = true ]; then \
+    apt-get update && apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb; \
+fi
+
+USER laradock
+
+RUN set -xe; \
+if [ ${INSTALL_CYPRESS} = true ]; then \
+    if [ ${CYPRESS_VERSION} = "latest" ]; then \
+        npm install -g cypress; \
+    else \
+        npm install -g cypress@${CYPRESS_VERSION}; \
+    fi; \
+fi
+
 #
 #--------------------------------------------------------------------------
 # Final Touch
