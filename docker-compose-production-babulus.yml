@@ -9,18 +9,10 @@ networks:
     external: true
 
 volumes:
-  mysql:
-    driver: ${VOLUMES_DRIVER}
   redis:
     driver: ${VOLUMES_DRIVER}
-  mariadb:
-    driver: ${VOLUMES_DRIVER}
-  mongo:
-    driver: ${VOLUMES_DRIVER}
-
 
 services:
-
 ### Workspace Utilities ##################################
     workspace:
       build:
@@ -143,11 +135,12 @@ services:
           - http_proxy
           - https_proxy
           - no_proxy
+      user: "${WORKSPACE_PUID}:${WORKSPACE_PGID}"
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
-        - /home/u1i2s/app/.env:/home/u1i2s/app/.env
+        - /home/battlestar/chatbot/storage:/home/battlestar/chatbot/storage
+        - /home/battlestar/chatbot/.env:/home/battlestar/chatbot/.env
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       ports:
@@ -256,11 +249,12 @@ services:
           - http_proxy
           - https_proxy
           - no_proxy
+      user: "${PHP_FPM_PUID}:${PHP_FPM_PGID}"
       volumes:
         - ./php-fpm/php${PHP_VERSION}.ini:/usr/local/etc/php/php.ini
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
-        - /home/u1i2s/app/.env:/home/u1i2s/app/.env
+        - /home/battlestar/chatbot/storage:/home/battlestar/chatbot/storage
+        - /home/battlestar/chatbot/.env:/home/battlestar/chatbot/.env
       expose:
         - "9000"
       extra_hosts:
@@ -314,11 +308,12 @@ services:
           - PUID=${PHP_WORKER_PUID}
           - PGID=${PHP_WORKER_PGID}
           - IMAGEMAGICK_VERSION=${PHP_WORKER_IMAGEMAGICK_VERSION}
+      user: "${PHP_WORKER_PUID}:${PHP_WORKER_PGID}"
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
-        - /home/u1i2s/app/.env:/home/u1i2s/app/.env
+        - /home/battlestar/chatbot/storage:/home/battlestar/chatbot/storage
+        - /home/battlestar/chatbot/.env:/home/battlestar/chatbot/.env
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       networks:
@@ -340,7 +335,8 @@ services:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
         - ${NGINX_SITES_PATH}:/etc/nginx/sites-available
-        - /home/u1i2s/app/storage:/home/u1i2s/app/storage
+        - /home/battlestar/chatbot/storage:/home/battlestar/chatbot/storage
+        - /home/battlestar/chatbot/.env:/home/battlestar/chatbot/.env
       depends_on:
         - php-fpm
       networks:
@@ -351,91 +347,22 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=tr
-        - traefik.http.routers.battlestar.rule=Host(`battlestar-spa.itceleb.com`)
-        - traefik.http.routers.battlestar.entrypoints=websecure
-        - traefik.http.routers.battlestar.middlewares=chain-oauth@file
-        - traefik.http.routers.battlestar.tls=true
-        - traefik.http.routers.battlestar.tls.certresolver=le
+        #- traefik.http.routers.chatbot-battlestar.rule=Host(`battlestar-spa.itceleb.com`)
+        - traefik.http.routers.chatbot-battlestar.rule=Host(`chatbot.battlestar.babulus.hu`)
+        - traefik.http.routers.chatbot-battlestar.entrypoints=websecure
+        - traefik.http.routers.chatbot-battlestar.middlewares=chain-oauth@file
+        - traefik.http.routers.chatbot-battlestar.tls=true
+        - traefik.http.routers.chatbot-battlestar.tls.certresolver=le
 
-### MySQL ################################################
-    mysql:
-      build:
-        context: ./mysql
-        args:
-          - MYSQL_VERSION=${MYSQL_VERSION}
-      environment:
-        - MYSQL_DATABASE=${MYSQL_DATABASE}
-        - MYSQL_USER=${MYSQL_USER}
-        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-        - TZ=${WORKSPACE_TIMEZONE}
-      volumes:
-        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
-        - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
-      networks:
-        - backend
-
-### MariaDB ##############################################
-    mariadb:
-      build:
-        context: ./mariadb
-        args:
-          - http_proxy
-          - https_proxy
-          - no_proxy
-          - MARIADB_VERSION=${MARIADB_VERSION}
-      volumes:
-        - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
-        - ${MARIADB_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
-      ports:
-        - "${MARIADB_PORT}:3306"
-      environment:
-        - TZ=${WORKSPACE_TIMEZONE}
-        - MYSQL_DATABASE=${MARIADB_DATABASE}
-        - MYSQL_USER=${MARIADB_USER}
-        - MYSQL_PASSWORD=${MARIADB_PASSWORD}
-        - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      networks:
-        - backend
-
-### MongoDB ##############################################
-    mongo:
-      build: ./mongo
-      ports:
-        - "${MONGODB_PORT}:27017"
-      environment:
-        - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
-        - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      volumes:
-        - ${DATA_PATH_HOST}/mongo:/data/db
-        - ${DATA_PATH_HOST}/mongo_config:/data/configdb
-      networks:
-        - backend
-      restart: unless-stopped
-
-### Redis ################################################
-    redis:
-      build: ./redis
+  ### Redis Stack Server ###################################
+    redis-stack-server:
+      image: redis/redis-stack-server
+      user: "${PHP_FPM_PUID}:${PHP_FPM_PGID}"
       volumes:
         - ${DATA_PATH_HOST}/redis:/data
-      command: --requirepass ${REDIS_PASSWORD}
+      environment:
+        - REDIS_ARGS=--requirepass ${REDIS_PASSWORD}
+        - PUID=${PHP_FPM_PUID}
+        - PGID=${PHP_FPM_PUID}
       networks:
         - backend
-
-### MongoDB PHP GUI ######################################
-    mongo-gui:
-      image: samueltallet/mongodb-php-gui
-      networks:
-        - tr
-        - backend
-      restart: unless-stopped
-      labels:
-        - traefik.enable=true
-        - traefik.docker.network=tr
-        - traefik.http.routers.mongoadmin.rule=Host(`mongo-admin.battlestar-spa.itceleb.com`)
-        - traefik.http.services.mongoadmin.loadbalancer.server.port=5000
-        - traefik.http.routers.mongoadmin.entrypoints=websecure
-        - traefik.http.routers.mongoadmin.middlewares=chain-oauth@file
-        - traefik.http.routers.mongoadmin.tls=true
-        - traefik.http.routers.mongoadmin.tls.certresolver=le
-
