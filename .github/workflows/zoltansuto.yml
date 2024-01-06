@@ -1,0 +1,77 @@
+name: CI-ZoltanSuto
+
+on:
+  push:
+    branches-ignore:
+      - 'build-branch'
+      - 'master'
+    paths-ignore:
+      - '.github/workflows/build-deploy-docs.yml'
+      - 'DOCUMENTATION/**'
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  build-php:
+    # Don't trigger on schedule event when in a fork
+    if: github.repository == 'zoltansuto/laradock'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [ php-fpm ] #, php-worker, workspace
+        php_version: [ 8.2 ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        env:
+          PHP_VERSION: ${{ matrix.php_version }}
+          LARADOCK_PHP_VERSION: ${{ matrix.php_version }}
+        run: |
+          set -eux
+          cp .env.example .env
+          # sed -i -- 's/=false/=true/g' .env
+          sed -i -- 's/CHANGE_SOURCE=true/CHANGE_SOURCE=false/g' .env
+          sed -i -- 's/PHPDBG=true/PHPDBG=false/g' .env
+          sed -i -- 's/CASSANDRA=true/CASSANDRA=false/g' .env
+          sed -i -- 's/GEARMAN=true/GEARMAN=false/g' .env
+          sed -i -- 's/AEROSPIKE=true/AEROSPIKE=false/g' .env
+          sed -i -- 's/PHALCON=true/PHALCON=false/g' .env
+          sed -i -- 's/RDKAFKA=true/RDKAFKA=false/g' .env
+          sed -i -- 's/MAILPARSE=true/MAILPARSE=false/g' .env
+          sed -i -- 's/OCI8=true/OCI8=false/g' .env
+          sed -i -- 's/V8JS=true/V8JS=false/g' .env
+          sed -i -- 's/AUDIOWAVEFORM=true/AUDIOWAVEFORM=false/g' .env
+          sed -i -- 's/SSDB=true/SSDB=false/g' .env
+          sed -i -- 's/ENCHANT=true/ENCHANT=false/g' .env
+          sed -i -- 's/PG_CLIENT=true/PG_CLIENT=false/g' .env
+          sed -i -- 's/MSSQL=true/MSSQL=false/g' .env
+#          docker compose build ${{ matrix.service }}
+#          docker compose up -d --no-deps -- ${{ matrix.service }}
+#          docker compose exec -T -- ${{ matrix.service }} php -m
+#          docker compose down
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.service }}
+          file: ./${{ matrix.service }}/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}-${{ matrix.service }}-latest
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}-${{ matrix.service }}-${{ github.sha }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+            LARADOCK_PHP_VERSION=${{ matrix.php_version }}
