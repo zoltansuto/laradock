@@ -48,6 +48,8 @@ jobs:
           sed -i -- 's/ENCHANT=true/ENCHANT=false/g' .env
           sed -i -- 's/PG_CLIENT=true/PG_CLIENT=false/g' .env
           sed -i -- 's/MSSQL=true/MSSQL=false/g' .env
+          sed -i -- 's/WORKSPACE_INSTALL_XDEBUG=true/WORKSPACE_INSTALL_XDEBUG=false/g' .env
+          sed -i -- 's/PHP_FPM_INSTALL_XDEBUG=true/PHP_FPM_INSTALL_XDEBUG=false/g' .env
 #          docker compose build ${{ matrix.service }}
 #          docker compose up -d --no-deps -- ${{ matrix.service }}
 #          docker compose exec -T -- ${{ matrix.service }} php -m
